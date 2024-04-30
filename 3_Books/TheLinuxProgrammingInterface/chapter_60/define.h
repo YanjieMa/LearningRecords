@@ -13,6 +13,19 @@
 
 
 
+
+struct myevent{
+	int fd;
+	int event;
+	void *arg;
+	void (*call_back)(int fd, int enent, void *arg);
+	int status;
+	long active;
+};
+
+
+
+
 int mysend(int sockfd, char *buf, size_t len)
 {
 	unsigned int sended = 0;//已经发送的数据
@@ -38,6 +51,23 @@ int mysend(int sockfd, char *buf, size_t len)
 
 int myrecv(int sockfd, char *buf, size_t len)
 {
+	unsigned int readed = 0;
+	int thisreaded = 0;
 
+	if(len <= 0){
+		return readed;
+	}
 
+	while(readed < len){
+		do{
+			thisreaded = recv(sockfd, buf, len - readed, 0);
+		}while(thisreaded <0 && errno == EINTR);
+		if(thisreaded < 0){
+			return readed;
+		}else if(thisreaded == 0){
+			return readed;
+		}
+		readed += thisreaded;
+		buf += thisreaded;		
+	}
 }
